@@ -8,9 +8,7 @@ import com.gmail.val59000mc.game.GameState;
 import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.UhcPlayer;
 import com.gmail.val59000mc.threads.KillDisconnectedPlayerThread;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -63,6 +61,8 @@ public class PlayerConnectionListener implements Listener{
 					player.setMaxHealth(20);
 					player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 99999, 0, true, false));
 					player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &7A new round is currently being loaded."));
+					player.playSound(player.getLocation(), Sound.valueOf("NOTE_BASS_DRUM"), 1.0f, 1.0f);
+					player.playEffect(player.getLocation(), Effect.RECORD_PLAY, 7);
 					return;
 				}
 

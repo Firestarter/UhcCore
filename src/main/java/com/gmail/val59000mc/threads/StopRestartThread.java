@@ -27,11 +27,11 @@ public class StopRestartThread implements Runnable{
 		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &fGet ready for next round- a new world is now generating."));
 
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			player.teleport(gm.getLobbyLocation());
+			player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard()); // clear player's existing scoreboard
+
 			player.setGameMode(GameMode.SPECTATOR);
+			player.teleport(gm.getLobbyLocation());
 			player.setMaxHealth(20);
-			player.sendTitle(ChatColor.AQUA + ChatColor.BOLD.toString() + "Next round", "A new world is now generating");
-			player.playSound(player.getLocation(), Sound.valueOf("LAVA_POP"), 1.0f, 1.0f);
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 99999, 0, true, false));
 		}
 

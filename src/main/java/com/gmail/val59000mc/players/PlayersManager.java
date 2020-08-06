@@ -211,14 +211,15 @@ public class PlayersManager{
 		// Firestarter start :: create player when joining game
 		GameManager gm = GameManager.getGameManager();
 		UhcPlayer uhcPlayer = gm.getPlayersManager().getOrCreateUhcPlayer(player);
-		uhcPlayer.setUpScoreboard();
 
-		// if (doesPlayerExist(player)){
-		// 	uhcPlayer = getUhcPlayer(player);
-		// }else{
-		// 	uhcPlayer = newUhcPlayer(player);
-		// 	Bukkit.getLogger().warning("[UhcCore] None existent player joined!");
-		// }
+		if (doesPlayerExist(player)){
+			uhcPlayer = getUhcPlayer(player);
+		}else {
+			uhcPlayer = newUhcPlayer(player);
+			Bukkit.getLogger().warning("[UhcCore] None existent player joined!");
+		}
+
+		uhcPlayer.setUpScoreboard();
 		// Firestarter end
 
 		switch(uhcPlayer.getState()){
@@ -230,6 +231,7 @@ public class PlayersManager{
 				}
 				// Firestarter start :: use custom title messages and delay messages
 				// uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_NEW);
+				player.removePotionEffect(PotionEffectType.BLINDNESS);
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, true, false));
 				Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), () -> {
 					player.sendTitle(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Hey there!", "Assemble a team to get ready");

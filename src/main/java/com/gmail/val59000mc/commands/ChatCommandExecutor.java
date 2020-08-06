@@ -1,9 +1,11 @@
 package com.gmail.val59000mc.commands;
 
 import com.gmail.val59000mc.game.GameManager;
+import com.gmail.val59000mc.game.GameState;
 import com.gmail.val59000mc.languages.Lang;
 import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.UhcPlayer;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,6 +22,14 @@ public class ChatCommandExecutor implements CommandExecutor{
 
 		Player player = (Player) sender;
 		GameManager gm = GameManager.getGameManager();
+
+		// Firestarter start :: don't allow command usage during round reset
+		if (gm.getGameState() == GameState.LOADING) {
+			player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &7Chat can only be used during a game."));
+			return true;
+		}
+		// Firestarter end
+
 		UhcPlayer uhcPlayer = gm.getPlayersManager().getUhcPlayer(player);
 
 		if(!uhcPlayer.getState().equals(PlayerState.PLAYING)){

@@ -2,6 +2,7 @@ package com.gmail.val59000mc.listeners;
 
 import com.gmail.val59000mc.configuration.MainConfiguration;
 import com.gmail.val59000mc.game.GameManager;
+import com.gmail.val59000mc.game.GameState;
 import com.gmail.val59000mc.languages.Lang;
 import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.UhcPlayer;
@@ -23,6 +24,12 @@ public class PlayerChatListener implements Listener{
 		if (e.isCancelled()){
 		    return;
         }
+
+		// Firestarter start :: don't handle events while the game is loading
+		if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
+			return;
+		}
+		// Firestarter end
 
 		UhcPlayer uhcPlayer = gm.getPlayersManager().getUhcPlayer(player);
 

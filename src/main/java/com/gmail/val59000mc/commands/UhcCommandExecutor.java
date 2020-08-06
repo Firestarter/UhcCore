@@ -143,6 +143,13 @@ public class UhcCommandExecutor implements CommandExecutor{
 					sender.sendMessage("Only players can use this sub-command.");
 				}
 				return true;
+
+			// Firestarter start :: add a subcommand to end game round
+			case "end":
+				GameManager.getGameManager().endGame();
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &7Ending the game."));
+				return true;
+			// Firestarter end
 		}
 
 		sender.sendMessage("Unknown sub command " + args[0]);

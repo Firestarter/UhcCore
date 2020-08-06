@@ -1,5 +1,7 @@
 package com.gmail.val59000mc.listeners;
 
+import com.gmail.val59000mc.game.GameManager;
+import com.gmail.val59000mc.game.GameState;
 import com.gmail.val59000mc.players.PlayersManager;
 import com.gmail.val59000mc.players.UhcPlayer;
 import org.bukkit.Location;
@@ -17,11 +19,16 @@ public class PlayerMovementListener implements Listener{
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
-        // handleFrozenPlayers(event); // Firestarter :: don't use freeze system
+        // Firestarter start :: don't handle events while the game is loading
+        if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
+            return;
+        }
+        // Firestarter end
+        handleFrozenPlayers(event);
     }
 
     private void handleFrozenPlayers(PlayerMoveEvent e){
-        UhcPlayer uhcPlayer = playersManager.getUhcPlayer(e.getPlayer());
+        UhcPlayer uhcPlayer = GameManager.getGameManager().getPlayersManager().getUhcPlayer(e.getPlayer()); // Firestarter :: always use correct player manager instance
         if (uhcPlayer.isFrozen()){
             Location freezeLoc = uhcPlayer.getFreezeLocation();
             Location toLoc = e.getTo();

@@ -2,6 +2,7 @@ package com.gmail.val59000mc.threads;
 
 import com.gmail.val59000mc.UhcCore;
 import com.gmail.val59000mc.game.GameManager;
+import com.gmail.val59000mc.game.GameState;
 import com.gmail.val59000mc.languages.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +23,12 @@ public class WorldBorderThread implements Runnable{
 	
 	@Override
 	public void run() {
+		// Firestarter strat :: don't start shrinking the border if the game hasn't started
+		if (GameManager.getGameManager().getGameState() != GameState.PLAYING) {
+			return;
+		}
+		// Firestarter end
+
 		if(timeBeforeShrink <= 0){
 			startMoving();
 		}else{

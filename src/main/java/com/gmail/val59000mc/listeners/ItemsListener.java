@@ -47,6 +47,12 @@ public class ItemsListener implements Listener {
 			return;
 		}
 
+		// Firestarter start :: don't handle events while the game is loading
+		if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
+			return;
+		}
+		// Firestarter end
+
 		Player player = event.getPlayer();
 		GameManager gm = GameManager.getGameManager();
 		UhcPlayer uhcPlayer = gm.getPlayersManager().getUhcPlayer(player);

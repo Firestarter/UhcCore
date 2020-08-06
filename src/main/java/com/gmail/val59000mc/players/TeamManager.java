@@ -58,7 +58,7 @@ public class TeamManager{
 
     public List<UhcTeam> getUhcTeams(){
         List<UhcTeam> teams = new ArrayList<>();
-        for(UhcPlayer player : pm.getPlayersList()){
+        for(UhcPlayer player : GameManager.getGameManager().getPlayersManager().getPlayersList()){ // Firestarter :: always use correct player manager instance
 
             UhcTeam team = player.getTeam();
             if(!teams.contains(team)) {
@@ -91,7 +91,7 @@ public class TeamManager{
     @Nullable
     public UhcTeam getTeamByName(String name){
         for (UhcTeam team : getUhcTeams()){
-            if (team.getTeamName().equals(name)){
+            if (team.getTeamName().equals(ChatColor.stripColor(name))){ // Firestarter :: strip color
                 return team;
             }
         }

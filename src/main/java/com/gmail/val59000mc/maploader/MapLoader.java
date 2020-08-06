@@ -33,12 +33,12 @@ public class MapLoader {
 		mapSeed = -1;
 		mapName = null;
 	}
-	
+
 	public String getLoadingState(){
-		double percentage = 100*chunksLoaded/totalChunksToLoad;		
-		return environment+" "+(Math.floor(10*percentage)/10);
+		double percentage = 100*chunksLoaded/totalChunksToLoad;
+		return String.valueOf(Math.floor(10*percentage)/10); // Firestarter :: don't include environment in loading message
 	}
-	
+
 	public void deleteLastWorld(String uuid){
 		if(uuid == null || uuid.equals("null")){
 			Bukkit.getLogger().info("[UhcCore] No world to delete");
@@ -52,7 +52,7 @@ public class MapLoader {
 			}
 		}
 	}
-	
+
 	public void createNewWorld(Environment env){
 		String worldName = UUID.randomUUID().toString();
 		if (UhcCore.getPlugin().getConfig().getBoolean("permanent-world-names", false)){
@@ -60,7 +60,7 @@ public class MapLoader {
 		}
 
 		Bukkit.getLogger().info("[UhcCore] Creating new world : "+worldName);
-		
+
 		GameManager gm = GameManager.getGameManager();
 
 		WorldCreator wc = new WorldCreator(worldName);
@@ -111,13 +111,13 @@ public class MapLoader {
 		}catch (IOException ex){
 			ex.printStackTrace();
 		}
-		
+
 		wc.type(WorldType.NORMAL);
 		Bukkit.getServer().createWorld(wc);
 	}
-	
+
 	public void loadOldWorld(String uuid, Environment env){
-		
+
 		if(uuid == null || uuid.equals("null")){
 			Bukkit.getLogger().info("[UhcCore] No world to load, defaulting to default behavior");
 			this.createNewWorld(env);
@@ -131,7 +131,7 @@ public class MapLoader {
 			}
 		}
 	}
-	
+
 	private void copyWorld(String randomWorldName, String worldName) {
 		Bukkit.getLogger().info("[UhcCore] Copying " + randomWorldName + " to " + worldName);
 		File worldDir = new File(randomWorldName);
@@ -139,7 +139,7 @@ public class MapLoader {
 			recursiveCopy(worldDir,new File(worldName));
 		}
 	}
-	
+
 	private void recursiveCopy(File fSource, File fDest) {
 	     try {
 	          if (fSource.isDirectory()) {
@@ -147,40 +147,40 @@ public class MapLoader {
 	               if (!fDest.exists()) {
 	                    fDest.mkdirs();
 	               }
-	 
+
 	               // Create list of files and directories on the current source
 	               // Note: with the recursion 'fSource' changed accordingly
 	               String[] fList = fSource.list();
-	 
+
 	               for (int index = 0; index < fList.length; index++) {
 	                    File dest = new File(fDest, fList[index]);
 	                    File source = new File(fSource, fList[index]);
-	 
+
 	                    // Recursion call take place here
 	                    recursiveCopy(source, dest);
 	               }
 	          }
 	          else {
 	               // Found a file. Copy it into the destination, which is already created in 'if' condition above
-	 
+
 	               // Open a file for read and write (copy)
 	               FileInputStream fInStream = new FileInputStream(fSource);
 	               FileOutputStream fOutStream = new FileOutputStream(fDest);
-	 
+
 	               // Read 2K at a time from the file
 	               byte[] buffer = new byte[2048];
 	               int iBytesReads;
-	 
+
 	               // In each successful read, write back to the source
 	               while ((iBytesReads = fInStream.read(buffer)) >= 0) {
 	                    fOutStream.write(buffer, 0, iBytesReads);
 	               }
-	 
+
 	               // Safe exit
 	               if (fInStream != null) {
 	                    fInStream.close();
 	               }
-	 
+
 	               if (fOutStream != null) {
 	                    fOutStream.close();
 	               }
@@ -212,35 +212,35 @@ public class MapLoader {
     	final int restEveryTicks = gm.getConfiguration().getRestEveryTicks();
     	final int chunksPerTick = gm.getConfiguration().getChunksPerTick();
     	final int restDuraton = gm.getConfiguration().getRestDuraton();
-    	
+
     	final boolean isGenerateVeins = gm.getConfiguration().getEnableGenerateVein() && env.equals(Environment.NORMAL);
-    	
+
     	Bukkit.getLogger().info("[UhcCore] Generating environment "+env.toString());
     	Bukkit.getLogger().info("[UhcCore] World border set to "+size+" blocks from lobby");
     	Bukkit.getLogger().info("[UhcCore] Loading a total "+Math.floor(totalChunksToLoad)+" chunks, up to chunk ( "+maxChunk+" , "+maxChunk+" )");
 		Bukkit.getLogger().info("[UhcCore] Resting "+restDuraton+" ticks every "+restEveryTicks+" ticks");
 		Bukkit.getLogger().info("[UhcCore] Loading up to "+chunksPerTick+" chunks per tick");
 		Bukkit.getLogger().info("[UhcCore] Loading map "+getLoadingState()+"%");
-		
+
 
     	final VeinGenerator veinGenerator = new VeinGenerator();
-    	
+
 		Bukkit.getScheduler().runTaskAsynchronously(UhcCore.getPlugin(), new Runnable(){
 
 			@Override
-			public void run() {				
+			public void run() {
 
-			
+
 				class RunnableWithParameter implements Runnable {
 			        private int i,j,nextRest;
-			        public RunnableWithParameter(int i, int j, int nextRest) { 
-			        	this.i = i; 
-			        	this.j = j; 
+			        public RunnableWithParameter(int i, int j, int nextRest) {
+			        	this.i = i;
+			        	this.j = j;
 			        	this.nextRest = nextRest;
 			        }
-			        
+
 			        public void run() {
-						
+
 			        	int loaded = 0;
 						while(i<= maxChunk && j <= maxChunk && loaded < chunksPerTick){
 							world.loadChunk(i, j);
@@ -254,23 +254,24 @@ public class MapLoader {
 							j++;
 						}
 						chunksLoaded=chunksLoaded+loaded;
-						
+
 						if(i <= maxChunk){
 							if(j > maxChunk){
 								j = -maxChunk;
 								i++;
 							}
-							
+
 							int delayTask = 0;
 							nextRest--;
 							if(nextRest == 0){
 								delayTask = restDuraton;
 								nextRest = restEveryTicks;
-								String message = "[UhcCore] Loading map "+getLoadingState()+"% - "+Math.floor(chunksLoaded)+"/"+Math.floor(totalChunksToLoad)+" chunks loaded";
+								String message = "[UhcCore] Loading map "+ environment + " " + getLoadingState()+"% - "+Math.floor(chunksLoaded)+"/"+Math.floor(totalChunksToLoad)+" chunks loaded";
 								// Firestarter start :: send actionbar updates to players
-								String status = ChatColor.translateAlternateColorCodes('&', "&fPreparing round: &a" + getLoadingState() + "%");
+								String top = environment.equals(Environment.NORMAL.name()) ? "&b&lPreparing round" : "&d&lGet ready";
+								String bottom = ChatColor.translateAlternateColorCodes('&', environment.equals(Environment.NORMAL.name()) ? "&fGenerating random world: &a" + getLoadingState() + "%" : "Finalizing: &a" + getLoadingState() + "%");
 								for (Player player : Bukkit.getOnlinePlayers()) {
-									player.sendTitle("", status);
+									player.sendTitle(ChatColor.translateAlternateColorCodes('&', top), bottom);
 								}
 								// Firestarter end
 								if(isGenerateVeins){
@@ -278,7 +279,7 @@ public class MapLoader {
 								}
 								Bukkit.getLogger().info(message);
 							}
-							
+
 							Bukkit.getScheduler().scheduleSyncDelayedTask(UhcCore.getPlugin(), new RunnableWithParameter(i,j,nextRest),delayTask);
 						}else{
 							chunksLoaded = totalChunksToLoad;
@@ -291,13 +292,13 @@ public class MapLoader {
 						}
 			        }
 				}
-				
+
 				Bukkit.getScheduler().scheduleSyncDelayedTask(UhcCore.getPlugin(), new RunnableWithParameter(-maxChunk,-maxChunk,restEveryTicks),0);
-				
+
 			}
-			
+
 		});
-		
+
 	}
 
 }

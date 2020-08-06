@@ -61,6 +61,7 @@ public class GameManager {
     private long elapsedTime;
 
     private static GameManager gameManager;
+    private static boolean hotLoaded = false; // Firestarter :: track if rounded was hot loaded
 
     static {
         gameManager = null;
@@ -103,12 +104,6 @@ public class GameManager {
     public PlayersManager getPlayersManager() {
         return playerManager;
     }
-
-    // Firestarter start :: reset player manager
-    public void resetPlayers() {
-        playerManager = new PlayersManager();
-    }
-    // Firestarter end
 
     public TeamManager getTeamManager() {
         return teamManager;
@@ -241,15 +236,20 @@ public class GameManager {
 
             Bukkit.unloadWorld(world, false);
             world.getWorldFolder().delete();
+            hotLoaded = true;
         }
-        // Firestarter end
-        loadConfig();
+
+        if (!hotLoaded) {
+            loadConfig();
+            registerListeners();
+        }
+
         setGameState(GameState.LOADING);
 
         worldBorder = new UhcWorldBorder();
         teamManager = new TeamManager();
-
-        registerListeners();
+        playerManager = new PlayersManager();
+        // Firestarter end
 
         if (configuration.getReplaceOceanBiomes()) {
             VersionUtils.getVersionUtils().replaceOceanBiomes();
@@ -318,16 +318,18 @@ public class GameManager {
 
     public void startWaitingPlayers() {
         loadWorlds();
-        registerCommands();
+        // Firestarter start :: support hot loading rounds
+        if (!hotLoaded) {
+            registerCommands();
+        }
+        // Firestarter end
         setGameState(GameState.WAITING);
         Bukkit.getLogger().info(Lang.DISPLAY_MESSAGE_PREFIX + " Players are now allowed to join");
         Bukkit.getScheduler().scheduleSyncDelayedTask(UhcCore.getPlugin(), new PreStartThread(), 0);
         // Firestarter start :: send already connected players to the UHC world
-        GameManager gm = GameManager.getGameManager();
-        gm.resetPlayers();
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-            GameManager.getGameManager().getPlayersManager().playerJoinsTheGame(player);
+            playerManager.playerJoinsTheGame(player);
         });
         // Firestarter end
     }
