@@ -9,6 +9,10 @@ import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.UhcPlayer;
 import com.gmail.val59000mc.threads.KillDisconnectedPlayerThread;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,6 +20,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class PlayerConnectionListener implements Listener{
 	
@@ -33,7 +39,7 @@ public class PlayerConnectionListener implements Listener{
 
 			if (allowedToJoin){
 				// Create player if not existent.
-				gm.getPlayersManager().getOrCreateUhcPlayer(event.getPlayer());
+				// gm.getPlayersManager().getOrCreateUhcPlayer(event.getPlayer()); // Firestarter :: move down player creation
 			}else{
 				throw new UhcPlayerJoinException("An unexpected error as occured.");
 			}
@@ -49,7 +55,19 @@ public class PlayerConnectionListener implements Listener{
 			
 			@Override
 			public void run() {
+				// Firestarter start :: send to lobby world if the world is still loading
+				if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
+					Player player = event.getPlayer();
+					player.teleport(GameManager.getGameManager().getLobbyLocation());
+					player.setGameMode(GameMode.SPECTATOR);
+					player.setMaxHealth(20);
+					player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 99999, 0, true, false));
+					player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &7A new round is currently being loaded."));
+					return;
+				}
+
 				GameManager.getGameManager().getPlayersManager().playerJoinsTheGame(event.getPlayer());
+				// Firestarter end
 			}
 		}, 1);
 		

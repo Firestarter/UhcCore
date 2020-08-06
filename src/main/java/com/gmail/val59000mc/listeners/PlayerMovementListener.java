@@ -17,7 +17,7 @@ public class PlayerMovementListener implements Listener{
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event){
-        handleFrozenPlayers(event);
+        // handleFrozenPlayers(event); // Firestarter :: don't use freeze system
     }
 
     private void handleFrozenPlayers(PlayerMoveEvent e){

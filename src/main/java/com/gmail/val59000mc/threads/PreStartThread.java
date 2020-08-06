@@ -95,7 +95,7 @@ public class PreStartThread implements Runnable{
 			}
 		}else{
 			if(!pause && remainingTime < timeBeforeStart+1){
-				gm.broadcastInfoMessage(Lang.GAME_STARTING_CANCELLED);
+				// gm.broadcastInfoMessage(Lang.GAME_STARTING_CANCELLED); // Firestarter :: don't send cancelled message
 			}
 			remainingTime = timeBeforeStart+1;
 			Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), task,20);

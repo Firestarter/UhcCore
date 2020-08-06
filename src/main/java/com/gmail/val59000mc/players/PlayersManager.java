@@ -48,7 +48,7 @@ public class PlayersManager{
 	private List<UhcPlayer> players;
 	private long lastDeathTime;
 
-	public PlayersManager(){
+	public PlayersManager() {
 		players = Collections.synchronizedList(new ArrayList<>());
 	}
 
@@ -62,7 +62,8 @@ public class PlayersManager{
 
 		switch(gm.getGameState()){
 			case LOADING:
-				throw new UhcPlayerJoinException(GameManager.getGameManager().getMapLoader().getLoadingState()+"% "+ Lang.KICK_LOADING);
+				return true; // Firestarter :: allow joining while loading
+				// throw new UhcPlayerJoinException(GameManager.getGameManager().getMapLoader().getLoadingState()+"% "+ Lang.KICK_LOADING);
 
 			case WAITING:
 				return true;
@@ -207,18 +208,18 @@ public class PlayersManager{
 	}
 
 	public void playerJoinsTheGame(Player player){
-		UhcPlayer uhcPlayer;
-
-		if (doesPlayerExist(player)){
-			uhcPlayer = getUhcPlayer(player);
-		}else{
-			uhcPlayer = newUhcPlayer(player);
-			Bukkit.getLogger().warning("[UhcCore] None existent player joined!");
-		}
-
+		// Firestarter start :: create player when joining game
+		GameManager gm = GameManager.getGameManager();
+		UhcPlayer uhcPlayer = gm.getPlayersManager().getOrCreateUhcPlayer(player);
 		uhcPlayer.setUpScoreboard();
 
-		GameManager gm = GameManager.getGameManager();
+		// if (doesPlayerExist(player)){
+		// 	uhcPlayer = getUhcPlayer(player);
+		// }else{
+		// 	uhcPlayer = newUhcPlayer(player);
+		// 	Bukkit.getLogger().warning("[UhcCore] None existent player joined!");
+		// }
+		// Firestarter end
 
 		switch(uhcPlayer.getState()){
 			case WAITING:
@@ -396,10 +397,20 @@ public class PlayersManager{
 	public void setPlayerSpectateAtLobby(UhcPlayer uhcPlayer){
 
 		uhcPlayer.setState(PlayerState.DEAD);
-		uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_SPECTATING);
+		// Firestarter start :: use custom title messages
+		//uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_SPECTATING);
+		try {
+			uhcPlayer.getPlayer().sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "You died", "You are now spectating");
+		} catch (UhcPlayerNotOnlineException e) {
+			e.printStackTrace();
+		}
+		// Firestarter end
 
 		if(GameManager.getGameManager().getConfiguration().getSpectatingTeleport()) {
-			uhcPlayer.sendPrefixedMessage(Lang.COMMAND_SPECTATING_HELP);
+			// Firestarter start :: use custom chat message
+			// uhcPlayer.sendPrefixedMessage(Lang.COMMAND_SPECTATING_HELP);
+			uhcPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &7Use &6/teleport&7 to spectate a player."));
+			// Firestarter end
 		}
 
 		Player player;

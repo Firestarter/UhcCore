@@ -10,9 +10,11 @@ import com.gmail.val59000mc.customitems.KitsManager;
 import com.gmail.val59000mc.events.UhcGameStateChangedEvent;
 import com.gmail.val59000mc.events.UhcStartingEvent;
 import com.gmail.val59000mc.events.UhcStartedEvent;
+import com.gmail.val59000mc.exceptions.UhcPlayerDoesntExistException;
 import com.gmail.val59000mc.languages.Lang;
 import com.gmail.val59000mc.listeners.*;
 import com.gmail.val59000mc.maploader.MapLoader;
+import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.PlayersManager;
 import com.gmail.val59000mc.players.TeamManager;
 import com.gmail.val59000mc.players.UhcPlayer;
@@ -101,6 +103,12 @@ public class GameManager {
     public PlayersManager getPlayersManager() {
         return playerManager;
     }
+
+    // Firestarter start :: reset player manager
+    public void resetPlayers() {
+        playerManager = new PlayersManager();
+    }
+    // Firestarter end
 
     public TeamManager getTeamManager() {
         return teamManager;
@@ -220,7 +228,21 @@ public class GameManager {
     }
 
     public void loadNewGame() {
-        deleteOldPlayersFiles();
+        // Firestarter start :: allow for hot loading of rounds
+        // deleteOldPlayersFiles();
+        for (World world : Bukkit.getWorlds()) {
+            if (!world.getName().contains("uhc-")) {
+                continue;
+            }
+
+            for (Chunk chunk : world.getLoadedChunks()) {
+                chunk.unload(false);
+            }
+
+            Bukkit.unloadWorld(world, false);
+            world.getWorldFolder().delete();
+        }
+        // Firestarter end
         loadConfig();
         setGameState(GameState.LOADING);
 
@@ -300,6 +322,14 @@ public class GameManager {
         setGameState(GameState.WAITING);
         Bukkit.getLogger().info(Lang.DISPLAY_MESSAGE_PREFIX + " Players are now allowed to join");
         Bukkit.getScheduler().scheduleSyncDelayedTask(UhcCore.getPlugin(), new PreStartThread(), 0);
+        // Firestarter start :: send already connected players to the UHC world
+        GameManager gm = GameManager.getGameManager();
+        gm.resetPlayers();
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
+            GameManager.getGameManager().getPlayersManager().playerJoinsTheGame(player);
+        });
+        // Firestarter end
     }
 
     public void startGame() {
@@ -334,8 +364,9 @@ public class GameManager {
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &7Use &6/chat&7 to toggle between global and team chat."));
             }
         }, 20 * 20L);
+
+        Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), () -> getPlayersManager().randomTeleportTeams(), 20);
         // Firestarter end
-        getPlayersManager().randomTeleportTeams();
         gameIsEnding = false;
     }
 
@@ -556,7 +587,7 @@ public class GameManager {
             getPlayersManager().playSoundToAll(UniversalSound.ENDERDRAGON_GROWL, 1, 2);
             // Firestarter end
             getPlayersManager().setAllPlayersEndGame();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(UhcCore.getPlugin(), new StopRestartThread(), 20);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(UhcCore.getPlugin(), new StopRestartThread(), 15 * 20);
         }
     }
 
@@ -618,5 +649,11 @@ public class GameManager {
             EndThread.stop();
         }
     }
+
+    // Firestarter start :: lobby world location getter
+    public Location getLobbyLocation() {
+        return Bukkit.getWorld("world").getBlockAt(0, 90, 0).getLocation();
+    }
+    // Firestarter end
 
 }

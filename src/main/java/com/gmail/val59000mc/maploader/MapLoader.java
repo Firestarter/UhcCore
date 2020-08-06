@@ -5,12 +5,10 @@ import com.gmail.val59000mc.game.GameManager;
 import com.gmail.val59000mc.game.UhcWorldBorder;
 import com.gmail.val59000mc.utils.FileUtils;
 import com.gmail.val59000mc.configuration.YamlFile;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.World.Environment;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -269,6 +267,12 @@ public class MapLoader {
 								delayTask = restDuraton;
 								nextRest = restEveryTicks;
 								String message = "[UhcCore] Loading map "+getLoadingState()+"% - "+Math.floor(chunksLoaded)+"/"+Math.floor(totalChunksToLoad)+" chunks loaded";
+								// Firestarter start :: send actionbar updates to players
+								String status = ChatColor.translateAlternateColorCodes('&', "&fPreparing round: &a" + getLoadingState() + "%");
+								for (Player player : Bukkit.getOnlinePlayers()) {
+									player.sendTitle("", status);
+								}
+								// Firestarter end
 								if(isGenerateVeins){
 									message+=" - "+veinsGenerated+" veins generated";
 								}
