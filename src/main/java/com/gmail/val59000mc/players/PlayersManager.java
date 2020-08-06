@@ -227,7 +227,14 @@ public class PlayersManager{
 				if(gm.getConfiguration().getAutoAssignNewPlayerTeam()){
 					autoAssignPlayerToTeam(uhcPlayer);
 				}
-				uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_NEW);
+				// Firestarter start :: use custom title messages and delay messages
+				// uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_NEW);
+				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, true, false));
+				Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), () -> {
+					player.sendTitle(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Hey there!", "Assemble a team to get ready");
+					player.playSound(player.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0f, 1.0f);
+				}, 20L);
+				// Firestarter end
 				break;
 			case PLAYING:
 				setPlayerStartPlaying(uhcPlayer);
@@ -275,7 +282,11 @@ public class PlayersManager{
 					uhcPlayer.getOfflineZombie().remove();
 					uhcPlayer.setOfflineZombie(null);
 				}
-				uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_IN_GAME);
+				// Firestarter start :: use custom title messsages
+				// uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_IN_GAME);
+				player.sendTitle(ChatColor.GOLD + ChatColor.BOLD.toString() + "Welcome back", "Time to get going again");
+				player.playSound(player.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0f, 1.0f);
+				// Firestarter end
 				break;
 			case DEAD:
 				setPlayerSpectateAtLobby(uhcPlayer);
@@ -354,9 +365,11 @@ public class PlayersManager{
 					VersionUtils.getVersionUtils().setPlayerMaxHealth(player, 20+((double) cfg.getExtraHalfHearts()));
 					player.setHealth(20+((double) cfg.getExtraHalfHearts()));
 				}
-				UhcItems.giveGameItemTo(player, GameItem.COMPASS_ITEM);
-				UhcItems.giveGameItemTo(player, GameItem.CUSTOM_CRAFT_BOOK);
-				KitsManager.giveKitTo(player);
+				// Firestarter start :: don't give extra items
+				// UhcItems.giveGameItemTo(player, GameItem.COMPASS_ITEM);
+				// UhcItems.giveGameItemTo(player, GameItem.CUSTOM_CRAFT_BOOK);
+				// KitsManager.giveKitTo(player);
+				// Firestarter end
 
 				if (!uhcPlayer.getStoredItems().isEmpty()){
 					player.getInventory().addItem(uhcPlayer.getStoredItems().toArray(new ItemStack[]{}));
@@ -416,11 +429,15 @@ public class PlayersManager{
 
 		if (!winners.isEmpty()) {
 			UhcPlayer player1 = winners.get(0);
+			// Firestarter start :: use custom messages
 			if (winners.size() == 1) {
-				gm.broadcastInfoMessage(Lang.PLAYERS_WON_SOLO.replace("%player%", player1.getDisplayName()));
+				// gm.broadcastInfoMessage(Lang.PLAYERS_WON_SOLO.replace("%player%", player1.getDisplayName()));
+				Bukkit.broadcastMessage(ChatColor.AQUA + ChatColor.BOLD.toString() + player1.getRealName() + " wins this round!");
 			} else {
-				gm.broadcastInfoMessage(Lang.PLAYERS_WON_TEAM.replace("%team%", player1.getTeam().getTeamName()));
+				// gm.broadcastInfoMessage(Lang.PLAYERS_WON_TEAM.replace("%team%", player1.getTeam().getTeamName()));
+				Bukkit.broadcastMessage(ChatColor.AQUA + ChatColor.BOLD.toString() + "Team " + player1.getTeam().getTeamName() + " wins this round!");
 			}
+			// Firestarter end
 		}
 
 		// send to bungee

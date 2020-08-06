@@ -8,6 +8,10 @@ import com.gmail.val59000mc.players.UhcTeam;
 import com.gmail.val59000mc.utils.TimeUtils;
 import com.gmail.val59000mc.utils.UniversalSound;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
 
@@ -63,14 +67,23 @@ public class PreStartThread implements Runnable{
 				force ||
 				(!pause && (remainingTime < 5 || (playersNumber >= minPlayers && readyTeams >= gm.getConfiguration().getMinimalReadyTeamsToStart() && percentageReadyTeams >= gm.getConfiguration().getMinimalReadyTeamsPercentageToStart())))
 		){
+			// Firestarter start :: use custom title messages
 			if(remainingTime == timeBeforeStart+1){
-				gm.broadcastInfoMessage(Lang.GAME_ENOUGH_TEAMS_READY);
-				gm.broadcastInfoMessage(Lang.GAME_STARTING_IN.replace("%time%", String.valueOf(remainingTime)));
-				gm.getPlayersManager().playSoundToAll(UniversalSound.CLICK);
+				// gm.broadcastInfoMessage(Lang.GAME_ENOUGH_TEAMS_READY);
+				// gm.broadcastInfoMessage(Lang.GAME_STARTING_IN.replace("%time%", String.valueOf(remainingTime)));
+				// gm.getPlayersManager().playSoundToAll(UniversalSound.CLICK);
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 25 * 20, 0, true, false));
+				}
 			}else if((remainingTime > 0 && remainingTime <= 10) || (remainingTime > 0 && remainingTime%10 == 0)){
-				gm.broadcastInfoMessage(Lang.GAME_STARTING_IN.replace("%time%", String.valueOf(remainingTime)));
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					ChatColor color = remainingTime <= 3 ? ChatColor.RED : ChatColor.GOLD;
+					player.sendTitle(color + ChatColor.BOLD.toString() + remainingTime, "UHC Event starting");
+				}
+
 				gm.getPlayersManager().playSoundToAll(UniversalSound.CLICK);
 			}
+			// Firestarter end
 
 			remainingTime--;
 

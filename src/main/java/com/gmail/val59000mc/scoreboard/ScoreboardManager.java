@@ -325,7 +325,7 @@ public class ScoreboardManager {
                 size = 0;
             }
 
-            String borderString = "+" + size + " -" + size;
+            String borderString = size + ", " + size; // Firestarter :: edit border string format
 
             int distanceX = size - (int) bukkitPlayer.getLocation().getX();
             int distanceZ = size - (int) bukkitPlayer.getLocation().getZ();

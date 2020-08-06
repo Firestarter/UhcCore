@@ -14,8 +14,8 @@ import java.util.Collections;
 
 public enum GameItem{
     // Lobby Items
-    TEAM_LIST(UniversalMaterial.PLAYER_HEAD),
-    TEAM_SELECTION(UniversalMaterial.IRON_SWORD),
+    TEAM_LIST(UniversalMaterial.BOOK),
+    TEAM_SELECTION(UniversalMaterial.NETHER_STAR),
     KIT_SELECTION(UniversalMaterial.IRON_PICKAXE),
     SCENARIO_VIEWER(UniversalMaterial.PAPER),
     BUNGEE_ITEM(UniversalMaterial.BARRIER),
@@ -46,10 +46,12 @@ public enum GameItem{
     public static final GameItem[] LOBBY_ITEMS = new GameItem[]{
             TEAM_LIST,
             TEAM_SELECTION,
-            KIT_SELECTION,
-            CUSTOM_CRAFT_BOOK,
-            SCENARIO_VIEWER,
-            BUNGEE_ITEM
+            // Firestarter start :: remove unnecessary items
+            // KIT_SELECTION,
+            // CUSTOM_CRAFT_BOOK,
+            // SCENARIO_VIEWER,
+            // BUNGEE_ITEM
+            // Firestarter end
     };
 
     private UniversalMaterial type;

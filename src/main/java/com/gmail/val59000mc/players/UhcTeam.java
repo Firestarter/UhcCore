@@ -57,7 +57,7 @@ public class UhcTeam {
 	}
 
 	public String getPrefix() {
-		return prefix + "\u25A0 ";
+		return prefix; // Firestarter :: remove extra unicode
 	}
 
 	public String getColor(){
@@ -73,7 +73,7 @@ public class UhcTeam {
 	}
 
 	public void sendChatMessageToTeamMembers(UhcPlayer sender, String message){
-		sendMessage(ChatColor.GREEN+"[Team] "+ChatColor.RESET+sender.getRealName()+": "+message);
+		sendMessage(ChatColor.LIGHT_PURPLE + "[Team] " + sender.getRealName() + ": " + ChatColor.WHITE + message); // Firestarter :: edit team chat format
 	}
 
 	public void sendMessage(String message){
@@ -235,11 +235,15 @@ public class UhcTeam {
 	public void changeReadyState(){
 		setReady(!isReadyToStart());
 		for(UhcPlayer teamMember : getMembers()){
+			// Firestarter start :: use custom chat messages
 			if(isReadyToStart()) {
-				teamMember.sendMessage(Lang.TEAM_MESSAGE_NOW_READY);
+				// teamMember.sendMessage(Lang.TEAM_MESSAGE_NOW_READY);
+				teamMember.sendMessage(ChatColor.translateAlternateColorCodes('&', "&d&lTeam: &7Your team is now ready."));
 			}else {
-				teamMember.sendMessage(Lang.TEAM_MESSAGE_NOW_NOT_READY);
+				// teamMember.sendMessage(Lang.TEAM_MESSAGE_NOW_NOT_READY);
+				teamMember.sendMessage(ChatColor.translateAlternateColorCodes('&', "&d&lTeam: &7Your team is no longer ready."));
 			}
+			// Firestarter end
 		}
 	}
 

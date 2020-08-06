@@ -87,7 +87,7 @@ public class PlayerDeathListener implements Listener{
 		// eliminations
 		ScenarioManager sm = gm.getScenarioManager();
 		if (!sm.isActivated(Scenario.SILENTNIGHT) || !((SilentNightListener) sm.getScenarioListener(Scenario.SILENTNIGHT)).isNightMode()) {
-			gm.broadcastInfoMessage(Lang.PLAYERS_ELIMINATED.replace("%player%", player.getName()));
+			// gm.broadcastInfoMessage(Lang.PLAYERS_ELIMINATED.replace("%player%", player.getName())); // Firestarter :: don't broadcast eliminations
 		}
 
 		if(cfg.getRegenHeadDropOnPlayerDeath()){
