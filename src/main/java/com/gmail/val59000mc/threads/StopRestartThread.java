@@ -24,7 +24,7 @@ public class StopRestartThread implements Runnable{
 	public void run() {
 		// Firestarter start :: generate a new world at the end of the game without disconnecting
 		GameManager gm = GameManager.getGameManager();
-		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &fGet ready for next round- a new world is now generating."));
+		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &eGet ready for next round- a new world is now generating."));
 
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard()); // clear player's existing scoreboard

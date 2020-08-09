@@ -32,7 +32,7 @@ public class NetherStartListener extends ScenarioListener{
 
         for(UhcTeam team : pm.listUhcTeams()){
             Location newLoc = pm.findRandomSafeLocation(nether, maxDistance);
-            team.setStartingLocation(newLoc);
+            team.setStartingLocation(newLoc);;
         }
     }
 

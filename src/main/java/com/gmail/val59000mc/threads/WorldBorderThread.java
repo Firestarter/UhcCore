@@ -23,7 +23,7 @@ public class WorldBorderThread implements Runnable{
 	
 	@Override
 	public void run() {
-		// Firestarter strat :: don't start shrinking the border if the game hasn't started
+		// Firestarter start :: don't start shrinking the border if the game hasn't started
 		if (GameManager.getGameManager().getGameState() != GameState.PLAYING) {
 			return;
 		}
@@ -39,7 +39,7 @@ public class WorldBorderThread implements Runnable{
 	
 	private void startMoving(){
 		//GameManager.getGameManager().broadcastInfoMessage(Lang.GAME_BORDER_START_SHRINKING);
-		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &fThe border is now shrinking.")); // Firestarter :: custom chat message
+		Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &eThe border is now shrinking.")); // Firestarter :: custom chat message
 
 		World overworld = Bukkit.getWorld(GameManager.getGameManager().getConfiguration().getOverworldUuid());
 		WorldBorder overworldBorder = overworld.getWorldBorder();

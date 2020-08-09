@@ -1,5 +1,10 @@
 package com.gmail.val59000mc;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.gmail.val59000mc.game.GameManager;
 import com.gmail.val59000mc.scenarios.Scenario;
 import com.gmail.val59000mc.utils.FileUtils;
@@ -8,6 +13,7 @@ import com.gmail.val59000mc.utils.TimeUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.myles.ViaVersion.api.PacketWrapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,6 +52,17 @@ public class UhcCore extends JavaPlugin{
 
 		// Delete files that are scheduled for deletion
 		FileUtils.removeScheduledDeletionFiles();
+
+		// Firestarter start :: make sure hearts display as hardcore hearts
+		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(this, PacketType.Play.Server.LOGIN) {
+
+			@Override
+			public void onPacketSending(PacketEvent event) {
+				event.getPacket().getBooleans().write(0, true);
+				// super.onPacketSending(event);
+			}
+		});
+		// Firestarter end
 	}
 
 	// Load the Minecraft version.

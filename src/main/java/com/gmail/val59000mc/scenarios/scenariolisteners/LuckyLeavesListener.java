@@ -18,7 +18,7 @@ public class LuckyLeavesListener extends ScenarioListener{
         }
 
         // add gapple
-        e.getBlock().getWorld().dropItem(e.getBlock().getLocation().add(.5,0,.5),new ItemStack(Material.GOLDEN_APPLE));
+        e.getBlock().getWorld().dropItem(e.getBlock().getLocation().add(.5,0,.5),new ItemStack(Material.GOLDEN_APPLE)); // Firestarter :: drop enchanted golden apple
     }
 
 }

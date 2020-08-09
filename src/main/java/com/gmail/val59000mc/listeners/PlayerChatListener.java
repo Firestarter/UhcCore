@@ -25,6 +25,8 @@ public class PlayerChatListener implements Listener{
 		    return;
         }
 
+		e.setFormat(ChatColor.DARK_GRAY + player.getName() + ChatColor.GRAY + ": " + e.getMessage());
+
 		// Firestarter start :: don't handle events while the game is loading
 		if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
 			return;
@@ -32,6 +34,9 @@ public class PlayerChatListener implements Listener{
 		// Firestarter end
 
 		UhcPlayer uhcPlayer = gm.getPlayersManager().getUhcPlayer(player);
+
+		String displayName = uhcPlayer.getState() == PlayerState.DEAD ? ChatColor.DARK_GRAY + "[SPECTATING] " + player.getName() : player.getDisplayName();
+		e.setFormat(displayName + ChatColor.GRAY + ": " + e.getMessage());
 
 		// Spec chat
         if(!cfg.getCanSendMessagesAfterDeath() && uhcPlayer.getState() == PlayerState.DEAD){
@@ -55,7 +60,6 @@ public class PlayerChatListener implements Listener{
 			e.setCancelled(true);
 			uhcPlayer.getTeam().sendChatMessageToTeamMembers(uhcPlayer, e.getMessage());
         }
-
 	}
 
 	private boolean isTeamMessage(MainConfiguration cfg, AsyncPlayerChatEvent e, UhcPlayer uhcPlayer){

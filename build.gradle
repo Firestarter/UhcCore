@@ -38,6 +38,14 @@ allprojects {
             // ProtocolLib
             url "http://repo.dmulloy2.net/nexus/repository/public/"
         }
+        maven {
+            // ViaVersion
+            url "https://repo.viaversion.com/"
+        }
+        maven {
+            // Paper
+            url 'https://papermc.io/repo/repository/maven-public/'
+        }
     }
 
     processResources {
@@ -54,10 +62,11 @@ dependencies {
     //shadow 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
     //shadow 'org.spigotmc:spigot-api:1.14.2-R0.1-SNAPSHOT'
     //shadow 'org.spigotmc:spigot-api:1.15.2-R0.1-SNAPSHOT'
-    shadow 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+    shadow 'com.destroystokyo.paper:paper-api:1.16.1-R0.1-SNAPSHOT'
     shadow 'com.github.MilkBowl:VaultAPI:1.7'
     compile 'com.github.WesJD.AnvilGUI:anvilgui:master-SNAPSHOT'
     shadow 'com.comphenix.protocol:ProtocolLib:4.4.0'
+    shadow 'us.myles:viaversion:3.0.1'
     compile project('Support-WorldEdit-6')
     compile project('Support-WorldEdit-7')
 }

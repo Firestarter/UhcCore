@@ -28,6 +28,7 @@ import com.gmail.val59000mc.utils.VersionUtils;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Skull;
 import org.bukkit.command.CommandException;
@@ -39,17 +40,35 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import us.myles.ViaVersion.api.Via;
+import us.myles.ViaVersion.api.ViaAPI;
+import us.myles.ViaVersion.api.boss.BossBar;
+import us.myles.ViaVersion.api.boss.BossColor;
+import us.myles.ViaVersion.api.boss.BossStyle;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class PlayersManager{
 
 	private List<UhcPlayer> players;
 	private long lastDeathTime;
+	// Firestarter start :: create viaversion bossbar
+	private final ViaAPI viaAPI = Via.getAPI();
+	private final BossBar bossBar;
+	private static final String DIVIDER = ChatColor.translateAlternateColorCodes('&', "&7&l&m-------------------------------------");
+	// Firestarter end
 
 	public PlayersManager() {
 		players = Collections.synchronizedList(new ArrayList<>());
+		this.bossBar = viaAPI.createBossBar(
+				ChatColor.translateAlternateColorCodes('&', "&e&l1 YEAR ANNIVERSARY &b&lUHC"),
+				1F,
+				BossColor.YELLOW,
+				BossStyle.SOLID
+		);
 	}
 
 	public void setLastDeathTime() {
@@ -108,7 +127,7 @@ public class PlayersManager{
 				if(player.hasPermission("uhc-core.join-override")){
 					return true;
 				}
-				throw new UhcPlayerJoinException(Lang.KICK_ENDED);
+				// throw new UhcPlayerJoinException(Lang.KICK_ENDED); // Firestarter :: don't kick when game is restarting
 
 		}
 		return false;
@@ -231,11 +250,14 @@ public class PlayersManager{
 				}
 				// Firestarter start :: use custom title messages and delay messages
 				// uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_NEW);
+				bossBar.addPlayer(player.getUniqueId());
+				Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.YELLOW + " joined the lobby.");
 				player.removePotionEffect(PotionEffectType.BLINDNESS);
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, true, false));
 				Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), () -> {
-					player.sendTitle(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "Hey there!", "Assemble a team to get ready");
-					player.playSound(player.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0f, 1.0f);
+					player.sendTitle(ChatColor.YELLOW + ChatColor.BOLD.toString() + "HEY THERE", "Assemble a team to get ready");
+					gm.sendTitleTimes(player, 0, 240, 20);
+					player.playSound(player.getLocation(), Sound.valueOf("LEVEL_UP"), 1.0f, 1.0f);
 				}, 20L);
 				// Firestarter end
 				break;
@@ -287,7 +309,7 @@ public class PlayersManager{
 				}
 				// Firestarter start :: use custom title messsages
 				// uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_IN_GAME);
-				player.sendTitle(ChatColor.GOLD + ChatColor.BOLD.toString() + "Welcome back", "Time to get going again");
+				player.sendTitle(ChatColor.GOLD + ChatColor.BOLD.toString() + "WELCOME BACK", "Time to get going again");
 				player.playSound(player.getLocation(), Sound.valueOf("NOTE_PLING"), 1.0f, 1.0f);
 				// Firestarter end
 				break;
@@ -402,7 +424,8 @@ public class PlayersManager{
 		// Firestarter start :: use custom title messages
 		//uhcPlayer.sendPrefixedMessage(Lang.PLAYERS_WELCOME_BACK_SPECTATING);
 		try {
-			uhcPlayer.getPlayer().sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "You died", "You are now spectating");
+			uhcPlayer.getPlayer().sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "YOU DIED", "You are now spectating");
+			GameManager.getGameManager().sendTitleTimes(uhcPlayer.getPlayer(), 10, 240, 10);
 		} catch (UhcPlayerNotOnlineException e) {
 			e.printStackTrace();
 		}
@@ -443,13 +466,15 @@ public class PlayersManager{
 		if (!winners.isEmpty()) {
 			UhcPlayer player1 = winners.get(0);
 			// Firestarter start :: use custom messages
+			Bukkit.broadcastMessage(DIVIDER);
 			if (winners.size() == 1) {
 				// gm.broadcastInfoMessage(Lang.PLAYERS_WON_SOLO.replace("%player%", player1.getDisplayName()));
-				Bukkit.broadcastMessage(ChatColor.AQUA + ChatColor.BOLD.toString() + player1.getRealName() + " wins this round!");
+				Bukkit.broadcastMessage(" " + ChatColor.AQUA + ChatColor.BOLD.toString() + player1.getRealName() + " wins this round!");
 			} else {
 				// gm.broadcastInfoMessage(Lang.PLAYERS_WON_TEAM.replace("%team%", player1.getTeam().getTeamName()));
-				Bukkit.broadcastMessage(ChatColor.AQUA + ChatColor.BOLD.toString() + "Team " + player1.getTeam().getTeamName() + " wins this round!");
+				Bukkit.broadcastMessage(" " + ChatColor.AQUA + ChatColor.BOLD.toString() + "Team " + player1.getTeam().getTeamName() + " wins this round!");
 			}
+			Bukkit.broadcastMessage(DIVIDER);
 			// Firestarter end
 		}
 

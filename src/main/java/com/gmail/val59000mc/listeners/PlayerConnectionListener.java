@@ -20,9 +20,13 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import us.myles.ViaVersion.api.Via;
+import us.myles.ViaVersion.api.ViaAPI;
 
 public class PlayerConnectionListener implements Listener{
-	
+
+	private final ViaAPI viaAPI = Via.getAPI();
+
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerLoginEvent event){
 		GameManager gm = GameManager.getGameManager();
@@ -49,10 +53,17 @@ public class PlayerConnectionListener implements Listener{
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerJoin(final PlayerJoinEvent event){
+		event.setJoinMessage(null); // Firestarter :: no join messages
 		Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), new Runnable() {
-			
+
 			@Override
 			public void run() {
+				// Firestarter start :: yell at players on non-1.8 versions
+				if (viaAPI.getPlayerVersion(event.getPlayer()) != 47) {
+					event.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', "&4&lIMPORTANT! &cPlaying on NON-1.8 CLIENTS will result in a &e&lSIGNIFICANTLY &cworse experience for you. PLEASE &e&lSWITCH TO 1.8.8 &cIF POSSIBLE!"));
+				}
+				// Firestarter end
+
 				// Firestarter start :: send to lobby world if the world is still loading
 				if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
 					Player player = event.getPlayer();
@@ -75,13 +86,20 @@ public class PlayerConnectionListener implements Listener{
 
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerDisconnect(PlayerQuitEvent event){
+		event.setQuitMessage(null); // Firestarter :: no quit messages
+
 		GameManager gm = GameManager.getGameManager();
+		// Firestarter start :: custom quit messages in lobby
+		if (gm.getGameState() == GameState.WAITING) {
+			Bukkit.broadcastMessage(ChatColor.AQUA + event.getPlayer().getName() + ChatColor.YELLOW + " left the lobby.");
+		}
+		// Firestarter end
 		if(gm.getGameState().equals(GameState.WAITING) || gm.getGameState().equals(GameState.STARTING)){
 			UhcPlayer uhcPlayer = gm.getPlayersManager().getUhcPlayer(event.getPlayer());
 
 			if(gm.getGameState().equals(GameState.STARTING)){
 				gm.getPlayersManager().setPlayerSpectateAtLobby(uhcPlayer);
-				gm.broadcastInfoMessage(uhcPlayer.getName()+" has left while the game was starting and has been killed.");
+				// gm.broadcastInfoMessage(uhcPlayer.getName()+" has left while the game was starting and has been killed."); // Firestarter :: no broadcasts
 				gm.getPlayersManager().strikeLightning(uhcPlayer);
 			}
 

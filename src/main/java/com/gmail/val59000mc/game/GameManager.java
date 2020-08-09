@@ -1,5 +1,9 @@
 package com.gmail.val59000mc.game;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.gmail.val59000mc.UhcCore;
 import com.gmail.val59000mc.commands.*;
 import com.gmail.val59000mc.configuration.MainConfiguration;
@@ -37,6 +41,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -355,7 +360,10 @@ public class GameManager {
         // broadcastInfoMessage(Lang.GAME_PLEASE_WAIT_TELEPORTING);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.sendTitle(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "It's go time.", "Have fun, survive, and don't starve.");
+            player.getInventory().clear();
+            player.playEffect(player.getLocation().add(0, 1, 0), Effect.valueOf("FLYING_GLYPH"), 5);
+            player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "GET GOING", "Have fun, survive, and don't starve.");
+            GameManager.getGameManager().sendTitleTimes(player, 10, 240, 10);
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 70, 0, true, false));
             player.playSound(player.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
             player.playSound(player.getLocation(), Sound.valueOf("PORTAL"), 1.0f, 1.0f);
@@ -363,7 +371,7 @@ public class GameManager {
 
         Bukkit.getScheduler().runTaskLater(UhcCore.getPlugin(), () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &7Use &6/chat&7 to toggle between global and team chat."));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &eUse &6/chat&e to toggle between global and team chat."));
             }
         }, 20 * 20L);
 
@@ -529,7 +537,7 @@ public class GameManager {
             theEnd.setDifficulty(configuration.getGameDifficulty());
         }
 
-        lobby = new Lobby(new Location(overworld, 0.5, 130, 0.5), Material.BARRIER); // Firestarter :: edit lobby layout
+        lobby = new Lobby(new Location(overworld, 0.5, 90, 0.5), Material.BARRIER); // Firestarter :: edit lobby layout
         lobby.build();
         lobby.loadLobbyChunks();
 
@@ -583,7 +591,7 @@ public class GameManager {
             // Firestarter start :: edit game end
             // broadcastInfoMessage(Lang.GAME_FINISHED);
             for (Player player : Bukkit.getOnlinePlayers()) {
-                player.sendTitle(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "It's over.", "Thank you so much for participating");
+                player.sendTitle(ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "IT'S OVER", "Thank you so much for participating");
             }
 
             getPlayersManager().playSoundToAll(UniversalSound.ENDERDRAGON_GROWL, 1, 2);
@@ -655,6 +663,20 @@ public class GameManager {
     // Firestarter start :: lobby world location getter
     public Location getLobbyLocation() {
         return Bukkit.getWorld("world").getBlockAt(0, 90, 0).getLocation();
+    }
+
+    public void sendTitleTimes(Player player, int fadeIn, int stay, int fadeOut) {
+        PacketContainer packet = new PacketContainer(PacketType.Play.Server.TITLE);
+        packet.getTitleActions().write(0, EnumWrappers.TitleAction.TIMES);
+        packet.getIntegers().write(0, fadeIn)
+                .write(1, stay)
+                .write(2, fadeOut);
+
+        try {
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player, packet);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
     // Firestarter end
 

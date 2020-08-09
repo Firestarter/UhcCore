@@ -6,6 +6,7 @@ import com.gmail.val59000mc.configuration.VaultManager;
 import com.gmail.val59000mc.customitems.UhcItems;
 import com.gmail.val59000mc.events.UhcPlayerKillEvent;
 import com.gmail.val59000mc.game.GameManager;
+import com.gmail.val59000mc.game.GameState;
 import com.gmail.val59000mc.languages.Lang;
 import com.gmail.val59000mc.players.PlayerState;
 import com.gmail.val59000mc.players.PlayersManager;
@@ -34,6 +35,11 @@ public class PlayerDeathListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDeath(PlayerDeathEvent event){
+		// Firestarter start :: don't handle events while the game is loading
+		if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
+			return;
+		}
+		// Firestarter end
 		Player player = event.getEntity();
 		GameManager gm = GameManager.getGameManager();
 		PlayersManager pm = gm.getPlayersManager();
@@ -136,6 +142,11 @@ public class PlayerDeathListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerRespawn(PlayerRespawnEvent event){
+		// Firestarter start :: don't handle events while the game is loading
+		if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
+			return;
+		}
+		// Firestarter end
 		PlayersManager pm = GameManager.getGameManager().getPlayersManager();
 		UhcPlayer uhcPlayer = pm.getUhcPlayer(event.getPlayer());
 

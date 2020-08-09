@@ -1,6 +1,8 @@
 package com.gmail.val59000mc.scenarios.scenariolisteners;
 
 import com.gmail.val59000mc.customitems.UhcItems;
+import com.gmail.val59000mc.game.GameManager;
+import com.gmail.val59000mc.game.GameState;
 import com.gmail.val59000mc.scenarios.Option;
 import com.gmail.val59000mc.scenarios.Scenario;
 import com.gmail.val59000mc.scenarios.ScenarioListener;
@@ -98,14 +100,14 @@ public class CutCleanListener extends ScenarioListener{
                 }
                 UhcItems.spawnExtraXp(loc,3);
                 break;
-            case SAND:
+            /*case SAND:
                 block.setType(Material.AIR);
                 loc.getWorld().dropItem(loc,new ItemStack(Material.GLASS));
                 break;
             case GRAVEL:
                 block.setType(Material.AIR);
                 loc.getWorld().dropItem(loc,new ItemStack(Material.FLINT));
-                break;
+                break;*/
         }
     }
 
@@ -129,6 +131,11 @@ public class CutCleanListener extends ScenarioListener{
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e){
+        // Firestarter start :: don't handle events while the game is loading
+        if (GameManager.getGameManager().getGameState() == GameState.LOADING) {
+            return;
+        }
+        // Firestarter end
         Inventory inv = e.getInventory();
         ItemStack item = e.getCurrentItem();
         if (!unlimitedLapis) return;

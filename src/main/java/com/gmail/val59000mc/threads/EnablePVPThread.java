@@ -32,8 +32,8 @@ public class EnablePVPThread implements Runnable{
 			// Firestarter start :: use custom title messages
 			//GameManager.getGameManager().broadcastInfoMessage(Lang.PVP_ENABLED);
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "Stay safe out there...", "The grace period is over");
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, true, false));
+				player.sendTitle(ChatColor.RED + ChatColor.BOLD.toString() + "STAY SAFE", "The grace period is over");
+				Bukkit.getScheduler().runTask(UhcCore.getPlugin(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, true, false)));
 			}
 			GameManager.getGameManager().getPlayersManager().playSoundToAll(UniversalSound.ENDERDRAGON_GROWL);
 			// Firestarter end
@@ -45,7 +45,7 @@ public class EnablePVPThread implements Runnable{
 			if(timeBeforePvp%60 == 0) {
 				// gm.broadcastInfoMessage(Lang.PVP_START_IN + " " + (timeBeforePvp / 60) + "m");
 				int minutes = (timeBeforePvp / 60);
-				Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &fGrace period ends in " + minutes + (minutes == 1 ? " minute." : " minutes.")));
+				Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lUHC: &eGrace period ends in " + minutes + (minutes == 1 ? " minute." : " minutes.")));
 			}else{
 				// gm.broadcastInfoMessage(Lang.PVP_START_IN + " " + timeBeforePvp + "s");
 				for (Player player : Bukkit.getOnlinePlayers()) {

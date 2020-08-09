@@ -68,7 +68,7 @@ public class FastLeavesDecayListener extends ScenarioListener{
                     Bukkit.getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {
                         relative.breakNaturally();
-                        relative.getWorld().playSound(relative.getLocation(), UniversalSound.BLOCK_GRASS_BREAK.getSound(), 1, 1);
+                        // relative.getWorld().playSound(relative.getLocation(), UniversalSound.BLOCK_GRASS_BREAK.getSound(), 1, 1);
                     }
                 }
             }, 5);

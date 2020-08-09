@@ -1,5 +1,9 @@
 package com.gmail.val59000mc.maploader;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.gmail.val59000mc.UhcCore;
 import com.gmail.val59000mc.game.GameManager;
 import com.gmail.val59000mc.game.UhcWorldBorder;
@@ -14,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 import java.util.UUID;
 
@@ -268,9 +273,10 @@ public class MapLoader {
 								nextRest = restEveryTicks;
 								String message = "[UhcCore] Loading map "+ environment + " " + getLoadingState()+"% - "+Math.floor(chunksLoaded)+"/"+Math.floor(totalChunksToLoad)+" chunks loaded";
 								// Firestarter start :: send actionbar updates to players
-								String top = environment.equals(Environment.NORMAL.name()) ? "&b&lPreparing round" : "&d&lGet ready";
-								String bottom = ChatColor.translateAlternateColorCodes('&', environment.equals(Environment.NORMAL.name()) ? "&fGenerating random world: &a" + getLoadingState() + "%" : "Finalizing: &a" + getLoadingState() + "%");
+								String top = environment.equals(Environment.NORMAL.name()) ? "&6&lPREPARING ROUND" : "&e&lGET READY";
+								String bottom = ChatColor.translateAlternateColorCodes('&', environment.equals(Environment.NORMAL.name()) ? "&fGenerating random world: &e" + getLoadingState() + "%" : "Finalizing: &b" + getLoadingState() + "%");
 								for (Player player : Bukkit.getOnlinePlayers()) {
+									gm.sendTitleTimes(player, 0, 70, 0);
 									player.sendTitle(ChatColor.translateAlternateColorCodes('&', top), bottom);
 								}
 								// Firestarter end
